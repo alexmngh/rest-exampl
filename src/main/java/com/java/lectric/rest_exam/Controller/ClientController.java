@@ -56,6 +56,7 @@ public class ClientController {
      *         В REST контроллерах спринга все POJO объекты, а также коллекции POJO объектов,
      *         которые возвращаются в качестве тел ответов, автоматически сериализуются в JSON,
      *         если явно не указано иное.
+     *         если список пустой, то  возвращаем просто HTTP статус 404 Not Found.
      */
     @GetMapping(value = "/clients")
     public ResponseEntity<List<Client>> read() {
@@ -79,6 +80,11 @@ public class ClientController {
      *           value = "/clients/{id}". Мы указали ее в фигурных скобках.
      *           А в параметрах метода принимаем её в качестве int переменной,
      *           с помощью аннотации @PathVariable(name = "id").
+     * @param @PathVariable тут появилась переменная пути.
+     * Переменная, которая определена в URI. value = "/clients/{id}".
+     * Мы указали ее в фигурных скобках. А в параметрах метода принимаем её в качестве int переменной,
+     * с помощью аннотации @PathVariable(name = "id").
+     *
      * @return ResponseEntity — специальный класс для возврата ответов.
      *      *         возвращаем ResponseEntity<List<Client>>, только в этот раз, помимо HTTP статуса,
      *      *         мы вернем еще и тело ответа, которым будет список клиентов.
@@ -98,6 +104,35 @@ public class ClientController {
         return client != null
                 ? new ResponseEntity<>(client, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * этот метод update обрабатывает PUT запросы (аннотация @PutMapping),
+     * @param id Переменная, которая определена в URI. value = "/clients/{id}
+     * @return ResponseEntity — специальный класс для возврата ответов.
+     */
+    @PutMapping(value = "/clients/{id}")
+    public ResponseEntity<?> update(@PathVariable(name = "id") int id, @RequestBody Client client) {
+        final boolean updated = clientService.update(client, id);
+
+        return updated
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+    }
+
+
+    /**
+     * этот метод delete обрабатывает DELETE запросы (аннотация DeleteMapping).
+     * @param id Переменная, которая определена в URI. value = "/clients/{id}
+     * @return ResponseEntity — специальный класс для возврата ответов.
+     */
+    @DeleteMapping(value = "/clients/{id}")
+    public ResponseEntity<?> delete(@PathVariable(name = "id") int id) {
+        final boolean deleted = clientService.delete(id);
+
+        return deleted
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
 }
